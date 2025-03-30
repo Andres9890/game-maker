@@ -1,18 +1,21 @@
-name: Process Game Submission
-
+name: Upload Game
 on:
   issues:
-    types: [opened]
-
+    types: [opened, edited]
 jobs:
-  process-game:
+  upload-game:
+    if: contains(github.event.issue.labels.*.name, 'game-upload')
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v3
         with:
           ref: gh-pages
       
-      - name: Create games directory
+      - name: Create games directory if it doesn't exist
         run: mkdir -p games
       
       - name: Extract game information
