@@ -22,8 +22,10 @@ jobs:
         id: extract
         run: |
           ISSUE_BODY="${{ github.event.issue.body }}"
-          FILENAME=$(echo "$ISSUE_BODY" | grep -oP '(?<=- Filename: ).*(?=\\r|$)')
-          ENCODED_CONTENT=$(echo "$ISSUE_BODY" | sed -n '/^```$/,/^```$/p' | grep -v '```')
+          FILENAME=$(echo "$ISSUE_BODY" | grep -oP '(?<=- Filename: ).*(?=$)' | tr -d '\r')
+          echo "Extracted filename: $FILENAME"
+          # Grab everything between the triple backticks
+          ENCODED_CONTENT=$(echo "$ISSUE_BODY" | awk '/^```$/,/^```$/{if (!/^```$/) print}')
           echo "filename=$FILENAME" >> $GITHUB_OUTPUT
           echo "content=$ENCODED_CONTENT" >> $GITHUB_ENV
       
